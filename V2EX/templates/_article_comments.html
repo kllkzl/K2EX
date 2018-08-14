@@ -1,0 +1,45 @@
+
+
+<ul class="comments">
+    {% if replys %}
+        {% for reply in replys %}
+        <li class="comment">
+            {% if reply.reply_type == 'reply2' %}
+                <p class="comment-reply-info">
+                    <span class="glyphicon glyphicon-envelope"></span>
+                    回复给<strong><i>
+                    {% if reply.reply_to %}
+                        {{ reply.reply_to }}
+                    {% endif %}
+                    ：</i></strong>
+                </p>
+            {% endif %}
+            <div class="comment-thumbnail">
+                <img class="img-rounded profile-thumbnail" src="{{ reply.gravatar() }}">
+            </div>
+            <div class="comment-info">
+                <div class="comment-date"><span>{{ reply.create_time.replace(microsecond=0) }}</span></div>
+                <div class="comment-author">
+                    <span>{{ reply.user.username }}</span>
+                </div>
+                <div class="comment-content">
+                    {% if reply.disabled == False  %}
+                        <p>{{ reply.content }}</p>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="row comment-handle " >
+                <div class="col-sm-offset-10">
+                    <button  class="btn btn-sm btn-info" onclick="go_reply( '{{ reply.user.username}}')">
+                        <span class="glyphicon glyphicon-comment"></span> 回复
+                    </button>
+                </div>
+            </div>
+        </li>
+        {% endfor %}
+    {% else %}
+        <li class="comment">
+            <div class="comment-content">暂无评论</div>
+        </li>
+    {% endif %}
+</ul>

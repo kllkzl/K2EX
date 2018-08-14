@@ -1,0 +1,193 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <link rel="shortcut icon" href="/static/images/favicon16.ico" type="image/x-icon">
+    <title>
+        {% block title %}
+            Welcome!
+        {% endblock %}
+    </title>
+    {% block stylesheet %}
+        <link href="{{ url_for('static', filename='css/bootstrap.css') }}" rel="stylesheet">
+        <link href="{{ url_for('static', filename='css/common.css') }}" rel="stylesheet">
+    {% endblock %}
+</head>
+
+{% set article_types = {'开发语言': ['Python', 'Java', 'JavaScript'],
+'Geek': ['Ruby on Rails', 'Tornado', 'MongoDB'],
+'城市': ['上海', '杭州'],
+'生活那些事': ['心灵有约', '缘分天空','郁闷小屋']} %}
+<header>
+    <div class='header-top'>
+        <div class="container">
+            <h2  class="blog-title"><a href="{{ url_for('main.index') }}">K2EX</a></h2>
+            <p class="lead signature">
+                Welcome to Explore !
+            </p>
+        </div>
+    </div>
+<nav class="navbar navbar-inverse" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle"
+             data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">切换导航</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="{{ url_for('main.index') }}">K2EX</a>
+        </div>
+        <div class="collapse navbar-collapse ">
+            <ul class="nav navbar-nav">
+                <li class=""><a href="/"><span class="glyphicon glyphicon-home"> 首页</span></a></li>
+                {% for menu in article_types %}
+                 <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{menu}}
+                    <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        {% for node in article_types[menu]  %}
+                        <li><a href="{{ url_for('main.nodes',tag=node.lower()) }}">{{node}}</a></li>
+                        {% endfor %}
+                    </ul>
+                </li>
+                {% endfor %}
+                <!-- <li class="dropdown">
+                    <a href="{{ url_for('main.tech_java') }}" class="dropdown-toggle" data-toggle="dropdown">技术
+                    <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{{ url_for('main.tech_java') }}">Java</a></li>
+                        <li><a href="{{ url_for('main.tech_python') }}">Python</a></li>
+                        <li><a href="{{ url_for('main.tech_ml') }}">Machine Learning</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a href="{{ url_for('main.fun_create') }}" class="dropdown-toggle" data-toggle="dropdown">好玩
+                    <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{{ url_for('main.fun_create') }}">创意</a></li>
+                        <li><a href="{{ url_for('main.fun_pi') }}">树莓派</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a href="{{ url_for('main.job_hangzhou') }}" class="dropdown-toggle" data-toggle="dropdown">
+                        求职
+                        <b class="caret"></b>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{{ url_for('main.job_hangzhou') }}">杭州</a></li>
+                        <li><a href="{{ url_for('main.job_shanghai') }}">上海</a></li>
+                    </ul>
+                </li> -->
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                {% if current_user.is_authenticated %}
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                <img class="img-rounded" src="{{ current_user.avatar(size=18) }}">
+                                {{ current_user.username }} <b class="caret"></b>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a href="{{ url_for('main.new_subject') }}">发表主题</a></li>
+                                <li><a href="{{ url_for('main.manage_subjects') }}">主题管理</a></li>
+                                <li><a href="{{ url_for('main.userpage',name=current_user.username) }}">用户管理</a></li>
+                                <li><a href="{{ url_for('user.logout') }}">退出登陆</a></li>
+                            </ul>
+                        </li>
+                {% else %}
+
+                <li><a href="{{url_for('user.register')}}"><span class="glyphicon glyphicon-user"></span> 注册</a></li>
+                <li><a href="{{url_for('user.login')}}"><span class="glyphicon glyphicon-log-in"></span> 登录</a></li>
+                {% endif %}
+            </ul>
+        </div>
+
+    </div>
+</nav>
+</header>
+
+
+{% block Content %}
+<body>
+    <div class="content" >
+        <div class="container">
+            <div class="row">
+                <div class="col-md-8 article">
+
+                    {% for category, message in get_flashed_messages(with_categories=true) %}
+                        <div class="alert alert-{{ category }} alert-dismissable">
+                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                    {% block content %}
+                    {% endblock %}
+                </div>
+                <div class="col-md-4">
+                    <p>浮动插件</p>
+                    {% block blog_nav_plugin %}
+                        {#<!--{% for plugin in Plugin.query.order_by(Plugin.order.asc()).all() %}
+                            {% if plugin.disabled != True %}
+                                {% if plugin.content != 'system_plugin' %}
+                                    <div id="{{ plugin.title }}" class="entry-box">
+                                        <h5><strong>{{ plugin.title }}</strong></h5>
+                                        {{ plugin.content | safe }}
+                                    </div>
+                                {% else %}
+                                    <div class="entry-box">
+                                        <h5><strong>博客统计</strong></h5>
+                                        <p>访问量：<span class="badge">{{ BlogView.query.first().num_of_view }}</span></p>
+                                        <p>
+                                            博文总数：<span class="badge">{{ Article.query.count() }}</span>
+                                            评论总数：<span class="badge">{{ Comment.query.count() }}</span>
+                                        </p>
+                                        <p>
+                                            {% for source in Source.query.all() %}
+                                                <a href="{{ url_for('main.article_sources', id=source.id) }}">{{ source.name }}</a>：
+                                                <span class="badge">{{ source.articles.count() }}</span>
+                                            {% endfor %}
+                                        </p>
+                                    </div>
+                                {% endif %}
+                            {% endif %}
+                        {% endfor %}-->#}
+                    {% endblock %}
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+{% endblock %}
+<div class="footer">
+    <p class="footer-content">
+        @2018
+        <a href="#">K2EX</a>
+        - Key To Explore -
+        <a href="#">
+            <span class="glyphicon glyphicon-wrench">
+                后台管理</span>
+        </a>
+    </p>
+</div>
+
+<div class="pull-right btn-group-vertical floatButton">
+    <button id="goTop" class="btn btn-default" title="去顶部" type="button">
+        <span class="glyphicon glyphicon-arrow-up"></span>
+    </button>
+    <button id="refresh" class="btn btn-default" title="刷新" type="button">
+        <span class="glyphicon glyphicon-refresh"></span>
+    </button>
+    <button id="goBottom" class="btn btn-default" title="去底部" type="button">
+        <span class="glyphicon glyphicon-arrow-down"></span>
+    </button>
+</div>
+
+
+{% block script %}
+    <script src="{{ url_for('static', filename='js/jquery-2.2.1.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/floatButton.js') }}"></script>
+{% endblock %}

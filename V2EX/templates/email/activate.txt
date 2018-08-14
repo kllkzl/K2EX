@@ -1,0 +1,5 @@
+Hello {{ username }}!
+激活请点击右边链接，{{ url_for('user.activate', token=token, _external=True) }}
+
+感谢您喜欢 K2EX.com！
+OKEx 官方

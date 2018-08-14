@@ -1,0 +1,40 @@
+<table width="100%">
+    <tr>
+        <td width="48"> <img class="img-rounded" height="48" width="48" src="{{ url_for('static', filename='images/avatar.jpg') }}" alt="Avatar"></td>
+        <td width="10"></td>
+        <td width="auto">
+            <div class="article-entry-header">
+    <h4 class="article-entry-title"  >
+        <a href="{{ url_for('main.subjectdetails', id=subject.id) }}">{{ subject.title }}</a>
+    </h4>
+</div>
+
+<div class="article-entry-info" >
+    <div class="base-info">
+        <a href="{{ url_for('user.userpage', name=subject.user.username) }}" target="_blank" style="color: blue">
+            <span class="label label-default" style="margin: 0 4px 0 0 ">
+                {{ subject.user.username }}
+            </span>
+        </a>
+
+        <a href="{{ url_for('main.nodes', tag=subject.tag) }}" target="_blank" style="color: white">
+            <span class="label label-info" style="margin: 0 4px 0 0 ">
+                {{ subject.tag }}
+            </span>
+        </a>
+
+        <span class="label label-default" style="margin: 0 4px 0 0">{{ subject.create_time.date() }}</span>&nbsp;
+    </div>
+    <div class="main-info pull-right">
+        <span class="label label-primary">点击 {{ subject.click_count }}</span>
+        <span class="label label-success">回复 {{ subject.reply_count }}</span>
+    </div>
+</div>
+<!--<div class="article-entry-sum">
+    <p>{{ subject.content[:50] }}......</p>
+</div>-->
+        </td>
+    </tr>
+</table>
+
+
